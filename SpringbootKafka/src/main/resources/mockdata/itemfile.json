@@ -1,0 +1,37 @@
+[{
+	"id": "456",
+	"bpnID": "343434434",
+	"upcId": "avavavavava",
+	"Description": "Demo Itemfor json file read",
+	"Price": "9.99",
+	"status": "active",
+	"storeId": "2564",
+	"Channeltype": "Pickup",
+	"City": "Sanfrancisco",
+	"Zipcode" : "95016"
+},
+	{
+		"id": "6789",
+		"bpnID": "343434434",
+		"upcId": "avavavavava",
+		"Description": "Demo Itemfor json file read",
+		"Price": "9.99",
+		"status": "active",
+		"storeId": "2564",
+		"Channeltype": "Pickup",
+		"City": "Sanfrancisco",
+		"Zipcode" : "95016"
+	},
+	{
+		"id": "22",
+		"bpnID": "343434434",
+		"upcId": "avavavavava",
+		"Description": "Demo Itemfor json file read",
+		"Price": "9.99",
+		"status": "active",
+		"storeId": "2564",
+		"Channeltype": "Pickup",
+		"City": "Sanfrancisco",
+		"Zipcode" : "95016"
+	}
+]
