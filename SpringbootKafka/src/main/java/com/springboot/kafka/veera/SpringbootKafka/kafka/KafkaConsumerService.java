@@ -23,12 +23,7 @@ public class KafkaConsumerService {
        itemRepository.save(item);
     }
 
-    @KafkaListener(topics = "OSDC_ITEM_UPDATE_QA", groupId = "group-id")
-    public void consumeAndSaveInventory(Inventory inventory) {
-
-        log.info(String.format("Message Inventory recieved -> %s", inventory));
-        inventoryRepository.save(inventory);
-    }
-
 }
+
+
 
