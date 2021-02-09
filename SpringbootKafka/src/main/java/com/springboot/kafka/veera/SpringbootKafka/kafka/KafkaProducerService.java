@@ -44,7 +44,7 @@ public class KafkaProducerService {
             defaultKafkaProducer.send(new ProducerRecord<String,Item>("ItemTopic",item));
         });
         log.info("Producer has sent all Item records successfully...");
-        defaultKafkaProducer.close();
+       // defaultKafkaProducer.close();
         
     }
 
