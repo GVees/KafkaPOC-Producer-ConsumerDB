@@ -1,5 +1,5 @@
 [{
-  "storeId": "3456",
+  "storeId": "98765678912123",
   "upcId": "00123456789012",
   "inventoryDetails": [{
     "source": "ds",
@@ -14,7 +14,7 @@
   ]
 },
   {
-    "storeId": "2345",
+    "storeId": "34234567621312",
     "upcId": "00123456789012",
     "inventoryDetails": [{
       "source": "ds",

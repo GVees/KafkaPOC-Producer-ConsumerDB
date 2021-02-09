@@ -1,4 +1,4 @@
-package com.springboot.kafka.veera.SpringbootKafka.item;
+package com.albertson.ds.producer.item;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
