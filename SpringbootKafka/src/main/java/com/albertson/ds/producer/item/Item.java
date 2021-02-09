@@ -1,4 +1,4 @@
-package com.springboot.kafka.veera.SpringbootKafka.item;
+package com.albertson.ds.producer.item;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

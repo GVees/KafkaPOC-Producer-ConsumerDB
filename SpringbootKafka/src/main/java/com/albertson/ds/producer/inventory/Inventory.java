@@ -1,4 +1,4 @@
-package com.springboot.kafka.veera.SpringbootKafka.inventory;
+package com.albertson.ds.producer.inventory;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
