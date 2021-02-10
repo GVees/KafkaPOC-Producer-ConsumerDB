@@ -114,7 +114,7 @@ public class JsonRead {
     @Async
     @PostConstruct
     public void launchItemMonitoring() {
-        log.info("START_MONITORING_INVENTORY");
+        log.info("START_MONITORING_Item");
         try {
             WatchKey key;
             while ((key = watchServiceForItem.take()) != null) {
@@ -143,12 +143,25 @@ public class JsonRead {
     }
 
     @PreDestroy
-    public void stopMonitoring() {
-        log.info("STOP_MONITORING");
+    public void stopMonitoringInventory() {
+        log.info("STOP_MONITORING Inventory");
 
         if (watchServiceForInventory != null) {
             try {
                 watchServiceForInventory.close();
+            } catch (IOException e) {
+                log.error("exception while closing the monitoring service");
+            }
+        }
+    }
+
+    @PreDestroy
+    public void stopMonitoringItem() {
+        log.info("STOP_MONITORING Item");
+
+        if (watchServiceForItem!= null) {
+            try {
+                watchServiceForItem.close();
             } catch (IOException e) {
                 log.error("exception while closing the monitoring service");
             }
