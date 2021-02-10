@@ -1,0 +1,6 @@
+POST WITH-OUT STATUS
+---------------------
+curl -i \
+-d '{"libraryEventId":null,"book":{"storeId":"999999","upcId":"123654789"}}' \
+-H "Content-Type: application/json" \
+-X POST http://localhost:8080/publish

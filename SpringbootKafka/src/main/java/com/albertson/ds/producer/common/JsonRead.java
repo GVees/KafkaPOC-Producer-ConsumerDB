@@ -9,12 +9,13 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.stereotype.Component;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,19 +28,15 @@ public class JsonRead {
     @Autowired
     ObjectMapper objectMapper;
 
-    @Value("classpath:mockdata/itemfile.json")
-    Resource itemFileJson;
-    //@Value("classpath:mockdata/InventoryFarDS.json")
-    //Resource inventoryFarDsResource;
     @Autowired
     ResourceLoader resourceLoader;
     public List<Item> readItemFromJson() throws IOException
     {
         Resource resource = resourceLoader.getResource("file:C:/TestData/itemfile.json");
-        //return Collections.emptyList();
-        return(List<Item>)readPayload(resource, new TypeReference<List< Item>>() {
+                return(List<Item>)readPayload(resource, new TypeReference<List< Item>>() {
        });
     }
+
     public List<Inventory> readInventoryFromJson() throws IOException
     {
         Resource resource = resourceLoader.getResource("file:C:/TestData/InventoryFarDS.json");
@@ -48,9 +45,14 @@ public class JsonRead {
         });
     }
 
-    public Object readPayload(Resource jsonFile, TypeReference typeReference) throws IOException{
+    private Object readPayload(Resource jsonFile, TypeReference typeReference) throws IOException{
         Object object = objectMapper.readValue(jsonFile.getFile(), typeReference);
         log.info("Object read from json ", object);
+        moveFilesToProcessedFolder(jsonFile.getFile());
         return object;
+    }
+
+    private void moveFilesToProcessedFolder(File fileToBeMove) throws IOException{
+        Files.move(fileToBeMove.toPath(), Paths.get("C:/TestData/archive/"+fileToBeMove.getName()));
     }
 }
