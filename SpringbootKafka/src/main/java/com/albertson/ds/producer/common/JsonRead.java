@@ -15,6 +15,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -34,19 +35,21 @@ public class JsonRead {
     ResourceLoader resourceLoader;
     public List<Item> readItemFromJson() throws IOException
     {
-        return(List<Item>)readPayload(itemFileJson, new TypeReference<List< Item>>() {
-        });
+        Resource resource = resourceLoader.getResource("file:C:/TestData/itemfile.json");
+        //return Collections.emptyList();
+        return(List<Item>)readPayload(resource, new TypeReference<List< Item>>() {
+       });
     }
     public List<Inventory> readInventoryFromJson() throws IOException
     {
-        Resource resource = resourceLoader.getResource("classpath:mockdata/InventoryFarDS.json");
+        Resource resource = resourceLoader.getResource("file:C:/TestData/InventoryFarDS.json");
 
         return(List<Inventory>)readPayload(resource, new TypeReference<List< Inventory>>() {
         });
     }
 
     public Object readPayload(Resource jsonFile, TypeReference typeReference) throws IOException{
-        Object object = objectMapper.readValue(jsonFile.getInputStream(), typeReference);
+        Object object = objectMapper.readValue(jsonFile.getFile(), typeReference);
         log.info("Object read from json ", object);
         return object;
     }
