@@ -1,6 +1,7 @@
 package com.albertson.ds.producer.common;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,16 +18,26 @@ import java.nio.file.WatchService;
 @Configuration
 public class WatchConfig {
 
-    @Value("${scanning-folder}")
-    private String inventoryFolderPath;
+    @Autowired
+    CommonProperties commonProperties;
 
     @Bean
     public WatchService watchServiceForInventory() {
-        log.debug("Inventory scanning_FOLDER: {}", inventoryFolderPath);
+        log.debug("Inventory scanning_FOLDER: {}", commonProperties.getInventoryFolderPath());
+        return  createWatchService(commonProperties.getInventoryFolderPath());
+    }
+
+    @Bean
+    public WatchService watchServiceForItem() {
+        log.debug("Inventory scanning_FOLDER: {}", commonProperties.getItemFolderPath());
+        return createWatchService(commonProperties.getItemFolderPath());
+    }
+
+    private WatchService createWatchService(String itemFolderPath) {
         WatchService watchService = null;
         try {
             watchService = FileSystems.getDefault().newWatchService();
-            Path path = Paths.get(inventoryFolderPath);
+            Path path = Paths.get(itemFolderPath);
 
             if (!Files.isDirectory(path)) {
                 throw new RuntimeException("incorrect monitoring folder: " + path);
@@ -43,5 +54,6 @@ public class WatchConfig {
         }
         return watchService;
     }
+
 
 }
