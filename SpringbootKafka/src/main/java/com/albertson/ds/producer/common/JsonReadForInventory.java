@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -29,56 +30,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 
-@Service
+@Component
 @Getter
 @Slf4j
-public class JsonRead {
-
-    @Autowired
-    ObjectMapper objectMapper;
-    @Autowired
-    ResourceLoader resourceLoader;
-    @Autowired
-    CommonProperties commonProperties;
-    @Autowired
-    KafkaProducerService kafkaProducerService;
-    @Autowired
-    private WatchService watchServiceForInventory;
-    @Autowired
-    private WatchService watchServiceForItem;
-
-    public List<Item> readItemFromJson() throws IOException {
-        Resource resource = resourceLoader.getResource("file:C:/TestData/itemfile.json");
-        return (List<Item>) readPayload(resource.getFile(), new TypeReference<List<Item>>() {
-        });
-    }
-
-    public List<Item> readItemFromJson(String filePath) throws IOException {
-        Resource resource = resourceLoader.getResource("file:"+ filePath);
-        return (List<Item>) readPayload(resource.getFile(), new TypeReference<List<Item>>() {
-        });
-    }
-
-    public List<Inventory> readInventoryFromJson() throws IOException {
-        return readInventoryFromJson("C:/TestData/InventoryFarDS.json");
-    }
-
-    public List<Inventory> readInventoryFromJson(String filePath) throws IOException {
-        Resource resource = resourceLoader.getResource("file:" + filePath);
-        return (List<Inventory>) readPayload(new File(filePath), new TypeReference<List<Inventory>>() {
-        });
-    }
-
-    private Object readPayload(File jsonFile, TypeReference typeReference) throws IOException {
-        log.info("json file: {}", jsonFile);
-        Object object = objectMapper.readValue(jsonFile, typeReference);
-        log.info("Object read from json {}", object);
-        return object;
-    }
-
-    private void moveFilesToProcessedFolder(File fileToBeMove, String newLocationPath) throws IOException {
-        Files.move(fileToBeMove.toPath(), Paths.get(newLocationPath + fileToBeMove.getName() + LocalDateTime.now()), StandardCopyOption.REPLACE_EXISTING);
-    }
+public class JsonReadForInventory extends  AbstractJsonRead {
 
     @Async
     @PostConstruct

@@ -1,6 +1,6 @@
 package com.albertson.ds.producer.item;
 
-import com.albertson.ds.producer.common.JsonRead;
+import com.albertson.ds.producer.common.JsonReadForInventory;
 import com.albertson.ds.producer.kafka.KafkaProducerService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,12 +12,12 @@ import java.util.List;
 @AllArgsConstructor
 public class ItemService {
 
-    private JsonRead jsonRead;
+    private JsonReadForInventory jsonReadForInventory;
     private KafkaProducerService kafkaProducerService;
 
     public void readItemAndSendToKafka() throws IOException
     {
-        List<Item> items = jsonRead.readItemFromJson();
+        List<Item> items = jsonReadForInventory.readItemFromJson();
         items.forEach(item -> kafkaProducerService.sendItemToKafka(item));
     }
 }
