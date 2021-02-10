@@ -50,7 +50,7 @@ public class JsonRead {
     public List<Item> readItemFromJson() throws IOException
     {
         Resource resource = resourceLoader.getResource("file:C:/TestData/itemfile.json");
-                return(List<Item>)readPayload(resource, new TypeReference<List< Item>>() {
+                return(List<Item>)readPayload(resource.getFile(), new TypeReference<List< Item>>() {
        });
     }
 
@@ -62,23 +62,24 @@ public class JsonRead {
     public List<Inventory> readInventoryFromJson(String filePath) throws IOException
     {
         Resource resource = resourceLoader.getResource("file:"+filePath);
-        return(List<Inventory>)readPayload(resource, new TypeReference<List< Inventory>>() {
+        return(List<Inventory>)readPayload(new File(filePath), new TypeReference<List< Inventory>>() {
         });
     }
 
-    private Object readPayload(Resource jsonFile, TypeReference typeReference) throws IOException{
-        Object object = objectMapper.readValue(jsonFile.getFile(), typeReference);
-        log.info("Object read from json ", object);
+    private Object readPayload(File jsonFile, TypeReference typeReference) throws IOException{
+        log.info("json file: {}", jsonFile);
+        Object object = objectMapper.readValue(jsonFile, typeReference);
+        log.info("Object read from json {}", object);
         return object;
     }
 
     private void moveFilesToProcessedFolder(File fileToBeMove) throws IOException{
-       Files.move(fileToBeMove.toPath(), Paths.get("/Users/cwh1lvl/Chetan/"+fileToBeMove.getName()), StandardCopyOption.REPLACE_EXISTING);
+     Files.move(fileToBeMove.toPath(), Paths.get("C:/TestData/archive/"+fileToBeMove.getName()), StandardCopyOption.REPLACE_EXISTING);
     }
 
     @Async
     @PostConstruct
-    public void launchMonitoring() throws IOException {
+    public void launchMonitoring() {
         log.info("START_MONITORING");
         try {
             WatchKey key;
@@ -88,9 +89,20 @@ public class JsonRead {
                     log.info("Event kind: {}; File affected: {}", event.kind(), event.context());
 
                     if(!event.kind().equals(StandardWatchEventKinds.ENTRY_DELETE)) {
-                        final List<Inventory> inventories = readInventoryFromJson(key.watchable().toString() + "/" + filePath.getFileName());
-                        inventories.forEach(inventory -> kafkaProducerService.sendInventory(inventory));
-                        moveFilesToProcessedFolder(new File(key.watchable().toString() + "/" + filePath.getFileName()));
+                        String filePathToProcess = key.watchable().toString() + "\\" + filePath.getFileName();
+                        if(Files.exists(Paths.get(filePathToProcess))) {
+                            log.info(filePathToProcess);
+                            final List<Inventory> inventories;
+                            try {
+                                inventories = readInventoryFromJson(filePathToProcess);
+
+                            inventories.forEach(inventory -> kafkaProducerService.sendInventory(inventory));
+                            moveFilesToProcessedFolder(new File(filePathToProcess));
+                            break;
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
                 }
                 key.reset();
