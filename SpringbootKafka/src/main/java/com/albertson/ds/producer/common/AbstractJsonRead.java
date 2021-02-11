@@ -17,6 +17,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.WatchService;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Slf4j
@@ -35,20 +36,10 @@ abstract class AbstractJsonRead {
     @Autowired
      WatchService watchServiceForItem;
 
-    public List<Item> readItemFromJson() throws IOException {
-        Resource resource = resourceLoader.getResource("file:C:/TestData/itemfile.json");
-        return (List<Item>) readPayload(resource.getFile(), new TypeReference<List<Item>>() {
-        });
-    }
-
-    public List<Item> readItemFromJson(String filePath) throws IOException {
+      public List<Item> readItemFromJson(String filePath) throws IOException {
         Resource resource = resourceLoader.getResource("file:"+ filePath);
         return (List<Item>) readPayload(resource.getFile(), new TypeReference<List<Item>>() {
         });
-    }
-
-    public List<Inventory> readInventoryFromJson() throws IOException {
-        return readInventoryFromJson("C:/TestData/InventoryFarDS.json");
     }
 
     public List<Inventory> readInventoryFromJson(String filePath) throws IOException {
@@ -65,7 +56,7 @@ abstract class AbstractJsonRead {
     }
 
     protected void moveFilesToProcessedFolder(File fileToBeMove, String newLocationPath) throws IOException {
-        Files.move(fileToBeMove.toPath(), Paths.get(newLocationPath + fileToBeMove.getName() + LocalDateTime.now()), StandardCopyOption.REPLACE_EXISTING);
+        Files.move(fileToBeMove.toPath(), Paths.get(newLocationPath + fileToBeMove.getName() + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyhh-mm-ss"))), StandardCopyOption.REPLACE_EXISTING);
     }
 
 }

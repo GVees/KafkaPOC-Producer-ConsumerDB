@@ -12,10 +12,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.StandardWatchEventKinds;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchKey;
+import java.nio.file.*;
 import java.util.List;
 
 
@@ -24,8 +21,7 @@ import java.util.List;
 @Slf4j
 public class JsonReadForItem extends  AbstractJsonRead {
 
-    @Async
-    @PostConstruct
+    @Async("threadPoolTaskExecutor")
     public void launchItemMonitoring() {
         log.info("START_MONITORING_Item");
         try {
@@ -36,17 +32,17 @@ public class JsonReadForItem extends  AbstractJsonRead {
                     log.info("Event kind: {}; File affected: {}", event.kind(), event.context());
                     if (!event.kind().equals(StandardWatchEventKinds.ENTRY_DELETE)) {
                         String filePathToProcess = key.watchable().toString() + "\\" + filePath.getFileName();
-                        log.info(filePathToProcess);
+                        log.info("File to process{} and doest it exit {}",filePathToProcess, Files.exists(Paths.get(filePathToProcess)));
                         try {
-                            final List<Item> items = readItemFromJson(filePathToProcess);
-                            items.forEach(item -> kafkaProducerService.sendItemToKafka(item));
-                            moveFilesToProcessedFolder(new File(filePathToProcess), commonProperties.getItemArchiveFolderPath());
-                            break;
+                            if(Files.exists(Paths.get(filePathToProcess))) {
+                                final List<Item> items = readItemFromJson(filePathToProcess);
+                                items.forEach(item -> kafkaProducerService.sendItemToKafka(item));
+                                moveFilesToProcessedFolder(new File(filePathToProcess), commonProperties.getItemArchiveFolderPath());
+                            }
                         } catch (IOException e) {
                             log.error("IO exception occured: {}", e.getMessage());
                         }
                     }
-
                 }
                 key.reset();
             }
@@ -55,18 +51,6 @@ public class JsonReadForItem extends  AbstractJsonRead {
         }
     }
 
-    @PreDestroy
-    public void stopMonitoringInventory() {
-        log.info("STOP_MONITORING Inventory");
-
-        if (watchServiceForInventory != null) {
-            try {
-                watchServiceForInventory.close();
-            } catch (IOException e) {
-                log.error("exception while closing the monitoring service");
-            }
-        }
-    }
 
     @PreDestroy
     public void stopMonitoringItem() {

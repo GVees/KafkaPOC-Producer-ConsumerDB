@@ -33,11 +33,11 @@ public class WatchConfig {
         return createWatchService(commonProperties.getItemFolderPath());
     }
 
-    private WatchService createWatchService(String itemFolderPath) {
+    private WatchService createWatchService(String folderPath) {
         WatchService watchService = null;
         try {
             watchService = FileSystems.getDefault().newWatchService();
-            Path path = Paths.get(itemFolderPath);
+            Path path = Paths.get(folderPath);
 
             if (!Files.isDirectory(path)) {
                 throw new RuntimeException("incorrect monitoring folder: " + path);

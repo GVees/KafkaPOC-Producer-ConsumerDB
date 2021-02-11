@@ -35,8 +35,7 @@ import java.util.List;
 @Slf4j
 public class JsonReadForInventory extends  AbstractJsonRead {
 
-    @Async
-    @PostConstruct
+    @Async("threadPoolTaskExecutor")
     public void launchInventoryMonitoring() {
         log.info("START_MONITORING_INVENTORY");
         try {
@@ -46,44 +45,16 @@ public class JsonReadForInventory extends  AbstractJsonRead {
                     Path filePath = (Path) event.context();
                     log.info("Event kind: {}; File affected: {}", event.kind(), event.context());
                     if (!event.kind().equals(StandardWatchEventKinds.ENTRY_DELETE)) {
-                        String filePathToProcess = key.watchable().toString() + "\\" + filePath.getFileName();
-                        log.info(filePathToProcess);
+                        String pathToMonitoringDir = key.watchable().toString();
+                        String filePathToProcess = pathToMonitoringDir + "\\" + filePath.getFileName();
+                        log.info("File to process {} and doest it exit {}",filePathToProcess, Files.exists(Paths.get(filePathToProcess)));
                         try {
-                            final List<Inventory> inventories = readInventoryFromJson(filePathToProcess);
-                            inventories.forEach(inventory -> kafkaProducerService.sendInventory(inventory));
-                            moveFilesToProcessedFolder(new File(filePathToProcess), commonProperties.getInventoryArchiveFolderPath());
-                            break;
-                        } catch (IOException e) {
-                            log.error("IO exception occured: {}", e.getMessage());
-                        }
-                    }
-
-                }
-                key.reset();
-            }
-        } catch (InterruptedException e) {
-            log.warn("interrupted exception for monitoring service");
-        }
-    }
-
-    @Async
-    @PostConstruct
-    public void launchItemMonitoring() {
-        log.info("START_MONITORING_Item");
-        try {
-            WatchKey key;
-            while ((key = watchServiceForItem.take()) != null) {
-                for (WatchEvent<?> event : key.pollEvents()) {
-                    Path filePath = (Path) event.context();
-                    log.info("Event kind: {}; File affected: {}", event.kind(), event.context());
-                    if (!event.kind().equals(StandardWatchEventKinds.ENTRY_DELETE)) {
-                        String filePathToProcess = key.watchable().toString() + "\\" + filePath.getFileName();
-                        log.info(filePathToProcess);
-                        try {
-                            final List<Item> items = readItemFromJson(filePathToProcess);
-                            items.forEach(item -> kafkaProducerService.sendItemToKafka(item));
-                            moveFilesToProcessedFolder(new File(filePathToProcess), commonProperties.getItemArchiveFolderPath());
-                            break;
+                            if(Files.exists(Paths.get(filePathToProcess))) {
+                                final List<Inventory> inventories = readInventoryFromJson(filePathToProcess);
+                                inventories.forEach(inventory -> kafkaProducerService.sendInventory(inventory));
+                                Thread.sleep(1000);
+                                moveFilesToProcessedFolder(new File(filePathToProcess), commonProperties.getInventoryArchiveFolderPath());
+                            }
                         } catch (IOException e) {
                             log.error("IO exception occured: {}", e.getMessage());
                         }
@@ -110,16 +81,4 @@ public class JsonReadForInventory extends  AbstractJsonRead {
         }
     }
 
-    @PreDestroy
-    public void stopMonitoringItem() {
-        log.info("STOP_MONITORING Item");
-
-        if (watchServiceForItem!= null) {
-            try {
-                watchServiceForItem.close();
-            } catch (IOException e) {
-                log.error("exception while closing the monitoring service");
-            }
-        }
     }
-}

@@ -9,17 +9,21 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @Getter
 public class CommonProperties {
-    @Value("${scanning-folder-inventory}")
+    @Value("${scanning.inventory.folder.path}")
     private String inventoryFolderPath;
 
-    @Value("${scanning-folder-item}")
+    @Value("${scanning.item.folder.path}")
     private String itemFolderPath;
 
-    @Value("${scanning-folder-item-archive}")
+    @Value("${scanning.item.archive.folder.path}")
     private String itemArchiveFolderPath;
 
-    @Value("${scanning-folder-inventory-archive}")
+    @Value("${scanning.inventory.archive.folder.path}")
     private String inventoryArchiveFolderPath;
 
+    @Value("${inventory.file.path}")
+    private String inventoryFilePath;
 
+    @Value("${item.file.path}")
+    private String itemFilePath;
 }

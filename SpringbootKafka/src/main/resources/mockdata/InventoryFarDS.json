@@ -1,0 +1,32 @@
+[{
+  "storeId": "222233",
+  "upcId": "00123456789012",
+  "inventoryDetails": [{
+    "source": "ds",
+    "timestamp": "2021-02-20T05:33:37.885Z",
+    "itemAvailability": "1"
+  },
+    {
+      "source": "FaR",
+      "timestamp": "2021-02-20T05:33:37.885Z",
+      "itemAvailability": "2"
+    }
+  ]
+},
+  {
+    "storeId": "7799",
+    "upcId": "00123456789012",
+    "inventoryDetails": [{
+      "source": "ds",
+      "timestamp": "2021-02-20T05:33:37.885Z",
+      "itemAvailability": "1"
+    },
+      {
+        "source": "FaR",
+        "timestamp": "2021-02-20T05:33:37.885Z",
+        "itemAvailability": "2"
+      }
+    ]
+  }
+
+]
